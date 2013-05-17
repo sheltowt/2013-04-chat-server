@@ -4,6 +4,49 @@
  * from this file and include it in basic-server.js. Check out the
  * node module documentation at http://nodejs.org/api/modules.html. */
 
-var handleRequest = function(request, response) {
-
+var http = require("http");
+var defaultCorsHeaders = {
+  "access-control-allow-origin": "*",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, OPTIONS",
+  "access-control-allow-headers": "content-type, accept",
+  "access-control-max-age": 10 // Seconds.
 };
+
+
+
+var handleRequest = function(request, response) {
+  console.log("Serving request type " + request.method + " for url " + request.url);
+  var messages = [];
+  var statusCode = 200;
+
+  var headers = defaultCorsHeaders;
+  headers['Content-Type'] = "text/plain";
+
+  response.writeHead(statusCode, headers);
+
+
+  if (request.method === 'POST') {
+    request.setEncoding('utf8');
+    var chunks = [];
+    request.on('data', function (chunk) {
+      console.log('got this data', chunk);
+      chunks.push(chunk);
+    });
+
+    request.on('end', function () {
+      var newMesage = JSON.parse(chunks.join(''));
+      messages.push(newMessage);
+      response.end(newMessage);
+    });
+  }
+
+  if(request.method === 'GET'){
+    console.log("I'm in the get");
+    response.write(messages);
+  }
+
+  response.write('whatevs');
+  response.end('something else');
+};
+
+module.exports = handleRequest;
