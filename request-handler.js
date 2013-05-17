@@ -11,7 +11,9 @@ var defaultCorsHeaders = {
   "access-control-allow-headers": "content-type, accept",
   "access-control-max-age": 10 // Seconds.
 };
-var messages = [];
+var sendBack = {
+  results : []
+};
 var handleRequest = function(request, response) {
   console.log("Serving request type " + request.method + " for url " + request.url);
   var statusCode = 200;
@@ -32,31 +34,23 @@ var handleRequest = function(request, response) {
 
     request.on('end', function () {
       var newMessage = JSON.parse(chunks.join(''));
-      messages.push(newMessage);
-      console.log(messages);
-      sendGetResponse();
-      response.end("BOOM");
+      sendBack.results.push(newMessage);
+      var BOOM = JSON.stringify(sendBack);
+      // sendGetResponse();
+      response.end(BOOM);
     });
   }
 
+  else if(request.method === 'GET'){
+    console.log("I'm in the get");
+    var thingWeSendBack = JSON.stringify(sendBack);
+    response.end(thingWeSendBack);
+  }
 
-  // if(request.method === 'GET' && messages.length > 0){
-  //   console.log("I'm in the get");
-  //   var thingWeSendBack = JSON.stringify(messages);
-  //   //response.write(thingWeSendBack);
-  //   response.end(thingWeSendBack);
-  //   // response.end(messages);
-  // }
-
-  if (request.method === 'OPTIONS') {
+  else if (request.method === 'OPTIONS') {
     // Options doesn't need a body, just headers, so end the response
     response.end();
   }
-  var sendGetResponse = function(){
-    var thingWeSendBack = JSON.stringify(messages);
-    //response.write(thingWeSendBack);
-    response.end(thingWeSendBack);
-  };
   // response.write('whatevs');
   // response.end('something else');
 };
