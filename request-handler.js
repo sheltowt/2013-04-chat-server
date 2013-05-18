@@ -20,7 +20,6 @@ var handleRequest = function(request, response) {
 
   var headers = defaultCorsHeaders;
   headers['Content-Type'] = "text/plain";
-
   response.writeHead(statusCode, headers);
 
 
@@ -28,7 +27,6 @@ var handleRequest = function(request, response) {
     request.setEncoding('utf8');
     var chunks = [];
     request.on('data', function (chunk) {
-      console.log('got this data', chunk);
       chunks.push(chunk);
     });
 
@@ -36,13 +34,11 @@ var handleRequest = function(request, response) {
       var newMessage = JSON.parse(chunks.join(''));
       sendBack.results.push(newMessage);
       var BOOM = JSON.stringify(sendBack);
-      // sendGetResponse();
       response.end(BOOM);
     });
   }
 
   else if(request.method === 'GET'){
-    console.log("I'm in the get");
     var thingWeSendBack = JSON.stringify(sendBack);
     response.end(thingWeSendBack);
   }
@@ -51,8 +47,6 @@ var handleRequest = function(request, response) {
     // Options doesn't need a body, just headers, so end the response
     response.end();
   }
-  // response.write('whatevs');
-  // response.end('something else');
 };
 
 module.exports = handleRequest;
